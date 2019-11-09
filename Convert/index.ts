@@ -1,5 +1,6 @@
 import { AzureFunction, Context, HttpRequest } from "@azure/functions"
 import mathjax = require("mathjax-node-sre");
+import svg2png = require("svg2png");
 
 const convert: AzureFunction = async function (context: Context, req: HttpRequest): Promise<void> {
     context.log('Convert function processed a request.');
@@ -28,8 +29,14 @@ const convert: AzureFunction = async function (context: Context, req: HttpReques
         svg: true
     });
 
+    var png = await svg2png(result.svg);
+
     context.res = {
-        body: result.mml
+        body: {
+            "math": result.mml,
+            "image": png.toString("base64"),
+            "text": result.speakText
+              }
     };
 };
 
